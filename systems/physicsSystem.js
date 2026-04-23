@@ -30,6 +30,7 @@ window.PhysicsConfig = {
   cameraMouseOffsetX: 0.15,      // 15% of viewport width
   cameraMouseOffsetY: 0.12,      // 12% of viewport height
   cameraOffsetLerp: 0.15,        // smoothing factor for the OFFSET only (not the anchor)
+  cameraDebugLog: false,         // flip to true to log body vs camera lock position
 
   // ---------- INTERACTION ----------
   // Player must be within this distance of a project object AND hovering it

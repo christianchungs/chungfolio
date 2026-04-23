@@ -86,10 +86,12 @@ class WorldScene extends Phaser.Scene {
   }
 
   update(time, delta) {
-    // NOTHING pauses here. Movement, camera, and interactions all run
-    // every frame regardless of whether the project panel is open.
+    // NOTHING pauses here. Movement and interactions run every frame
+    // regardless of whether the project panel is open.
+    // NOTE: the camera syncs on the scene's POST_UPDATE event (inside
+    // CameraSystem) — not called from here — so it always runs AFTER
+    // physics + user update in the same tick. Zero lag from player.
     this.player.update(delta);
-    this.cameraSystem.update();
     this.interactionSystem.update();
 
     // ---- Vertical world wrap ----
