@@ -1,57 +1,81 @@
 /* ============================================================
- *  Project overlay (DOM-based)
+ *  Project panel (non-blocking right-side drawer)
  * ============================================================
- *  Kept as plain HTML + JS rather than Phaser text so links
- *  are clickable, copy is selectable, and styling is easy.
+ *  Implemented as plain DOM — crisp text, clickable links,
+ *  native scrolling, and independent from the Phaser game loop.
+ *
+ *  CRITICAL: this panel must NOT pause gameplay. The world,
+ *  player, camera, and physics all keep running while it's open.
+ *  No backdrop covers the canvas; pointer events on the panel
+ *  itself don't affect the game.
  * ============================================================ */
 
 window.ProjectOverlay = {
   _isOpen: false,
-  _onClose: null,
 
   init() {
-    const close = document.getElementById("overlay-close");
-    const backdrop = document.getElementById("project-overlay");
+    document.getElementById("panel-close").addEventListener("click", () => this.hide());
 
-    close.addEventListener("click", () => this.hide());
-
-    // Click outside the card to close.
-    backdrop.addEventListener("click", (e) => {
-      if (e.target === backdrop) this.hide();
-    });
-
-    // Esc also closes.
+    // Esc also closes. This never affects gameplay since the game loop
+    // doesn't care about Esc — we just close the panel.
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && this._isOpen) this.hide();
     });
   },
 
-  show(project, onClose) {
-    document.getElementById("overlay-title").textContent = project.title;
-    document.getElementById("overlay-description").textContent = project.description;
+  show(project) {
+    const panel = document.getElementById("project-panel");
+    document.getElementById("panel-title").textContent = project.title;
 
-    const link = document.getElementById("overlay-link");
-    if (project.link) {
-      link.href = project.link;
-      link.textContent = project.linkLabel || "View project →";
-    } else {
-      link.href = "#";
-      link.textContent = "";
+    const content = document.getElementById("panel-content");
+    content.innerHTML = "";
+
+    // Sections (Overview / Process / Challenges / Reflection / etc.)
+    for (const section of project.sections || []) {
+      const h = document.createElement("h3");
+      h.textContent = section.heading;
+      content.appendChild(h);
+
+      // Split on blank lines so paragraphs render as separate <p> tags.
+      const paragraphs = (section.body || "").split(/\n\s*\n/);
+      for (const para of paragraphs) {
+        const p = document.createElement("p");
+        p.textContent = para;
+        content.appendChild(p);
+      }
     }
 
-    document.getElementById("project-overlay").classList.remove("hidden");
+    // Links list at the bottom.
+    if (project.links && project.links.length) {
+      const h = document.createElement("h3");
+      h.textContent = "Links";
+      content.appendChild(h);
+
+      const ul = document.createElement("ul");
+      ul.className = "links-list";
+      for (const link of project.links) {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = link.url;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.textContent = link.label;
+        li.appendChild(a);
+        ul.appendChild(li);
+      }
+      content.appendChild(ul);
+    }
+
+    // Scroll back to top when switching projects.
+    content.scrollTop = 0;
+
+    panel.classList.add("open");
     this._isOpen = true;
-    this._onClose = onClose || null;
   },
 
   hide() {
-    document.getElementById("project-overlay").classList.add("hidden");
+    document.getElementById("project-panel").classList.remove("open");
     this._isOpen = false;
-    if (this._onClose) {
-      const cb = this._onClose;
-      this._onClose = null;
-      cb();
-    }
   },
 
   isOpen() {

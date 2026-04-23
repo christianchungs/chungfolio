@@ -12,32 +12,38 @@
   <!-- Phaser mounts its canvas here. -->
   <div id="game"></div>
 
-  <!-- HTML overlay shown when the player presses E on a project object.
-       Kept as DOM (not canvas) so text/links are easy to edit & accessible. -->
-  <div id="project-overlay" class="hidden">
-    <div class="overlay-card">
-      <button id="overlay-close" aria-label="Close">&times;</button>
-      <h2 id="overlay-title"></h2>
-      <p id="overlay-description"></p>
-      <a id="overlay-link" href="#" target="_blank" rel="noopener"></a>
-    </div>
-  </div>
+  <!-- Right-side sliding project panel. Does NOT cover the canvas
+       and does NOT pause the game — gameplay continues behind it. -->
+  <aside id="project-panel" aria-hidden="true">
+    <header class="panel-header">
+      <h2 id="panel-title">Project</h2>
+      <button id="panel-close" aria-label="Close">&times;</button>
+    </header>
+    <div id="panel-content" class="panel-content"></div>
+  </aside>
 
   <!-- Hint bar in the corner. -->
-  <div id="hint-bar">Move: A/D or ←/→ &nbsp;•&nbsp; Jump: W / ↑ / Space &nbsp;•&nbsp; Interact: E</div>
+  <div id="hint-bar">Move: A/D or ←/→ &nbsp;•&nbsp; Jump: W / ↑ / Space (double-jump) &nbsp;•&nbsp; Interact: right-click a project in range</div>
 
-  <!-- Load order matters: data & config first, then systems, then entities, then scenes, then bootstrap. -->
+  <!-- Load order matters:
+       data & assets → systems → ui → entities → scenes → bootstrap. -->
   <script src="data/projects.js"></script>
   <script src="assets/assetLoader.js"></script>
+
   <script src="systems/physicsSystem.js"></script>
   <script src="systems/inputSystem.js"></script>
   <script src="systems/cameraSystem.js"></script>
+  <script src="systems/interactionSystem.js"></script>
+
   <script src="ui/projectOverlay.js"></script>
+
   <script src="entities/Player.js"></script>
   <script src="entities/ProjectObject.js"></script>
+
   <script src="scenes/BootScene.js"></script>
   <script src="scenes/WorldScene.js"></script>
   <script src="scenes/UIScene.js"></script>
+
   <script src="main.js"></script>
 </body>
 </html>

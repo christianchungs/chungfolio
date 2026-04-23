@@ -1,53 +1,101 @@
 /* ============================================================
  *  EDIT YOUR PROJECTS HERE
  * ============================================================
- *  Each entry becomes an interactable object in the world.
- *  Walk up to it and press "E" to open its details.
+ *  Each entry becomes an interactable floating block in the world.
+ *  Stand near one (within ~10 tiles), hover it with the cursor,
+ *  and RIGHT-CLICK to open its panel.
  *
  *  FIELDS
- *    id          unique string, used internally
- *    title       shown at top of the overlay
- *    description paragraph body of the overlay
- *    link        external URL (optional — leave "" to hide)
- *    linkLabel   text for the link button (defaults to "View project")
- *    x           world x-coordinate (pixels). spread these out.
- *    color       placeholder block color (hex). replace with sprite later.
+ *    id         unique string, internal
+ *    title      shown at top of the panel
+ *    x, y       world pixel coordinates of the object
+ *    color      placeholder block color (hex). replace with sprite later.
+ *    sections   array of { heading, body } — rendered top-to-bottom
+ *    links      array of { label, url } — rendered as a list at the bottom
  *
  *  To add a project: copy a block, change the fields, done.
  *  To remove one:    delete its block.
  * ============================================================ */
 
+// Re-usable long placeholder text so you can test scrolling immediately.
+// REPLACE with your real project content when you're ready.
+const LONG_PARAGRAPH =
+  "This is placeholder project copy. " +
+  "Replace it with real details about your process, decisions, trade-offs, " +
+  "and outcomes. Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+  "Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque " +
+  "penatibus et magnis dis parturient montes, nascetur ridiculus mus. " +
+  "Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. " +
+  "Nulla consequat massa quis enim. Donec pede justo, fringilla vel, " +
+  "aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet " +
+  "a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium.";
+
 window.PROJECTS = [
   {
     id: "project-one",
-    title: "Project One",
-    description:
-      "A short description of your first project. Explain what it does, what you used, and what made it interesting.",
-    link: "https://example.com",
-    linkLabel: "View project →",
-    x: 600,
+    title: "Example Portfolio Project",
+    x: 620,
+    y: 470,
     color: 0xffb347,
+    sections: [
+      {
+        heading: "Overview",
+        body:
+          "A short summary of the project in one paragraph. What it is, " +
+          "who it's for, and why it exists.",
+      },
+      {
+        heading: "Process",
+        body:
+          LONG_PARAGRAPH + "\n\n" +
+          LONG_PARAGRAPH + "\n\n" +
+          LONG_PARAGRAPH,
+      },
+      {
+        heading: "Challenges",
+        body:
+          LONG_PARAGRAPH + "\n\n" +
+          LONG_PARAGRAPH,
+      },
+      {
+        heading: "Reflection",
+        body:
+          LONG_PARAGRAPH + "\n\n" +
+          LONG_PARAGRAPH,
+      },
+    ],
+    links: [
+      { label: "Live site →", url: "https://example.com" },
+      { label: "Source code →", url: "https://github.com" },
+    ],
   },
 
   {
     id: "project-two",
-    title: "Project Two",
-    description:
-      "Second project description. Keep it to a paragraph or two — the overlay is intentionally compact.",
-    link: "",
-    linkLabel: "",
-    x: 1100,
+    title: "Second Example Project",
+    x: 1180,
+    y: 360,
     color: 0x7ac4ff,
+    sections: [
+      {
+        heading: "Overview",
+        body:
+          "Second placeholder project. Edit this object in data/projects.js " +
+          "to replace this content.",
+      },
+      {
+        heading: "Process",
+        body: LONG_PARAGRAPH + "\n\n" + LONG_PARAGRAPH,
+      },
+      {
+        heading: "Reflection",
+        body: LONG_PARAGRAPH,
+      },
+    ],
+    links: [
+      { label: "Case study →", url: "https://example.com" },
+    ],
   },
 
   // ---- ADD MORE PROJECTS BELOW ----
-  // {
-  //   id: "project-three",
-  //   title: "Project Three",
-  //   description: "...",
-  //   link: "https://...",
-  //   linkLabel: "View project →",
-  //   x: 1600,
-  //   color: 0xa78bfa,
-  // },
 ];
