@@ -1,12 +1,10 @@
 /* ============================================================
  *  WorldScene — the main playable world.
  * ============================================================
- *  Responsibilities:
- *    - build the ground (tiled placeholder blocks)
- *    - spawn the player
- *    - spawn project objects from data/projects.js
- *    - camera follow
- *    - "E" to open the project overlay when near an object
+ *  Wires together the systems:
+ *    InputSystem  → keyboard + mouse
+ *    Player       → movement logic (uses InputSystem + PhysicsConfig)
+ *    CameraSystem → locked-to-player camera + mouse offset
  *
  *  TO ADD NEW OBJECTS TO THE WORLD:
  *    Most of the time you only need to edit data/projects.js.
@@ -16,9 +14,8 @@
 
 const WORLD_CONFIG = {
   width: 4000,          // total level width in pixels
-  height: 720,          // viewport height
-  groundHeightTiles: 2, // how many tile rows of ground
-  gravityY: 900,
+  height: 720,          // nominal level height
+  groundHeightTiles: 2,
 };
 
 class WorldScene extends Phaser.Scene {
@@ -27,15 +24,15 @@ class WorldScene extends Phaser.Scene {
   }
 
   create() {
-    // ---- World + camera bounds ----
+    // ---- Physics world ----
     this.physics.world.setBounds(0, 0, WORLD_CONFIG.width, WORLD_CONFIG.height);
-    this.physics.world.gravity.y = WORLD_CONFIG.gravityY;
-    this.cameras.main.setBounds(0, 0, WORLD_CONFIG.width, WORLD_CONFIG.height);
+    this.physics.world.gravity.y = PhysicsConfig.gravity;
+
+    // Background (no camera bounds — camera must be free to stay
+    // centered on the player everywhere per the spec).
     this.cameras.main.setBackgroundColor(ASSETS.sky.color);
 
-    // ---- Ground ----
-    // A static group of repeated tile sprites. Simple + easy to swap
-    // for a real tilemap later without changing gameplay code.
+    // ---- Ground (placeholder tiles) ----
     this.ground = this.physics.add.staticGroup();
     const tile = ASSETS.tile;
     const tileW = tile.width * tile.scale;
@@ -51,11 +48,13 @@ class WorldScene extends Phaser.Scene {
       }
     }
 
-    // ---- Player ----
-    // Spawn just above the ground so they fall into place.
-    this.player = new Player(this, 120, groundTopY - 80);
+    // ---- Systems + Player ----
+    this.inputSystem = new InputSystem(this);
+    this.player = new Player(this, 120, groundTopY - 80, this.inputSystem);
     this.physics.add.collider(this.player.sprite, this.ground);
-    this.cameras.main.startFollow(this.player.sprite, true, 0.1, 0.1);
+
+    // CameraSystem handles centering manually — no startFollow() here.
+    this.cameraSystem = new CameraSystem(this, this.player.sprite, this.inputSystem);
 
     // ---- Project objects (one per entry in data/projects.js) ----
     this.projectObjects = PROJECTS.map(
@@ -65,27 +64,30 @@ class WorldScene extends Phaser.Scene {
     // ---- Interaction key ----
     this.keyE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
 
-    // Pause physics while the overlay is open so nothing moves underfoot.
+    // Overlay controls the DOM project card.
     ProjectOverlay.init();
     this._overlayPaused = false;
   }
 
-  update() {
-    // If the overlay is open, freeze input/physics.
+  update(time, delta) {
+    // Pause physics while the project overlay is open.
     if (ProjectOverlay.isOpen()) {
       if (!this._overlayPaused) {
         this.physics.pause();
         this._overlayPaused = true;
       }
+      // Keep the camera snapped to the player so it doesn't drift while paused.
+      this.cameraSystem.update();
       return;
     } else if (this._overlayPaused) {
       this.physics.resume();
       this._overlayPaused = false;
     }
 
-    this.player.update();
+    this.player.update(delta);
+    this.cameraSystem.update();
 
-    // Figure out which (if any) object the player is currently next to.
+    // Find the project object currently in range (if any).
     let nearest = null;
     for (const obj of this.projectObjects) {
       if (obj.updateProximity(this.player) && !nearest) {
@@ -93,7 +95,6 @@ class WorldScene extends Phaser.Scene {
       }
     }
 
-    // Press E to open that object's overlay.
     if (nearest && Phaser.Input.Keyboard.JustDown(this.keyE)) {
       ProjectOverlay.show(nearest.project);
     }

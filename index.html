@@ -26,9 +26,12 @@
   <!-- Hint bar in the corner. -->
   <div id="hint-bar">Move: A/D or ←/→ &nbsp;•&nbsp; Jump: W / ↑ / Space &nbsp;•&nbsp; Interact: E</div>
 
-  <!-- Load order matters: data & config first, then entities, then scenes, then game bootstrap. -->
+  <!-- Load order matters: data & config first, then systems, then entities, then scenes, then bootstrap. -->
   <script src="data/projects.js"></script>
   <script src="assets/assetLoader.js"></script>
+  <script src="systems/physicsSystem.js"></script>
+  <script src="systems/inputSystem.js"></script>
+  <script src="systems/cameraSystem.js"></script>
   <script src="ui/projectOverlay.js"></script>
   <script src="entities/Player.js"></script>
   <script src="entities/ProjectObject.js"></script>
