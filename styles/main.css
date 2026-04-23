@@ -1,0 +1,97 @@
+/* Minimal styles — Phaser handles the game visuals.
+   Only the DOM overlay + page chrome lives here. */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #0e0e14;
+  color: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow: hidden;
+}
+
+#game {
+  width: 100vw;
+  height: 100vh;
+}
+
+#game canvas {
+  display: block;
+  image-rendering: pixelated;    /* keep pixel art crisp once real sprites land */
+  image-rendering: crisp-edges;
+}
+
+/* ---------- Hint bar ---------- */
+#hint-bar {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
+/* ---------- Project overlay ---------- */
+#project-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+
+#project-overlay.hidden { display: none; }
+
+.overlay-card {
+  position: relative;
+  max-width: 520px;
+  width: calc(100% - 32px);
+  padding: 28px 28px 24px;
+  background: #1a1a22;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.overlay-card h2 {
+  margin: 0 0 12px;
+  font-size: 22px;
+}
+
+.overlay-card p {
+  margin: 0 0 18px;
+  line-height: 1.55;
+  color: #d0d0d8;
+}
+
+.overlay-card a {
+  color: #7ac4ff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.overlay-card a:hover { text-decoration: underline; }
+.overlay-card a:empty { display: none; }
+
+#overlay-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #aaa;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+#overlay-close:hover { color: #fff; }

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chungfolio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <!-- Phaser 3 via CDN so no build tools are required. -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
+</head>
+<body>
+  <!-- Phaser mounts its canvas here. -->
+  <div id="game"></div>
+
+  <!-- HTML overlay shown when the player presses E on a project object.
+       Kept as DOM (not canvas) so text/links are easy to edit & accessible. -->
+  <div id="project-overlay" class="hidden">
+    <div class="overlay-card">
+      <button id="overlay-close" aria-label="Close">&times;</button>
+      <h2 id="overlay-title"></h2>
+      <p id="overlay-description"></p>
+      <a id="overlay-link" href="#" target="_blank" rel="noopener"></a>
+    </div>
+  </div>
+
+  <!-- Hint bar in the corner. -->
+  <div id="hint-bar">Move: A/D or ←/→ &nbsp;•&nbsp; Jump: W / ↑ / Space &nbsp;•&nbsp; Interact: E</div>
+
+  <!-- Load order matters: data & config first, then entities, then scenes, then game bootstrap. -->
+  <script src="data/projects.js"></script>
+  <script src="assets/assetLoader.js"></script>
+  <script src="ui/projectOverlay.js"></script>
+  <script src="entities/Player.js"></script>
+  <script src="entities/ProjectObject.js"></script>
+  <script src="scenes/BootScene.js"></script>
+  <script src="scenes/WorldScene.js"></script>
+  <script src="scenes/UIScene.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
